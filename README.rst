@@ -1,6 +1,10 @@
-Sample Module Repository
-========================
+pycklx
+======
 
-This simple project is an example repo for Python projects.
+This script will convert an xml file to a pickle file, and vice-versa.
 
-`Learn more <http://www.kennethreitz.org/essays/repository-structure-and-python>`_.
+$ pycklx input.xml -o output.p   # read from input.xml, write to output.p
+$ pycklx -o output.p             # read from stdin, write to output.p
+$ pycklx input.p -o output.xml   # read from input.p, write to output.xml
+$ pycklx -t xml -o output        # read from stdin, write to output, convert from pickle *t*o xml
+

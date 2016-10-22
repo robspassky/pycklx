@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from .context import sample
+from .context import pycklx
 
 import unittest
+
+
+def done():
+    print("All Done")
 
 
 class AdvancedTestSuite(unittest.TestCase):
     """Advanced test cases."""
 
     def test_thoughts(self):
-        sample.hmm()
+        pycklx.topickle("tests/simple.xml", done)
 
 
 if __name__ == '__main__':
