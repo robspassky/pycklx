@@ -10,6 +10,7 @@
 # Parse the XML files generically.
 
 import xml.etree.ElementTree
+import pickle
 import sys
 import io
 
@@ -91,4 +92,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         test()
     else:
-        parse(sys.argv[1])
+        doc = parse(sys.argv[1])
+        out = open(sys.argv[2], "wb")
+        pickle.dump(doc, out, -1)
