@@ -19,6 +19,7 @@ import xml.etree.ElementTree
 import dateutil.parser
 import sys
 import re
+import json
 
 
 def incr(d, k):
@@ -35,20 +36,39 @@ def uniqkids(element):
     return kids
 
 
+#
+# read xml, extract classes
+#
+klasses = {}
+fields = {}
+
+
 class Klass:
     def __init__(self):
         self.contexts = set()
         self.fields = {}
+        self.name = ""
 
     def add(self, context, element):
+        self.name = element.tag.capitalize()
         self.contexts.add(context)
+        counts = {}
+        for i in list(element):
+            incr(counts, element.tag)
+        for i in counts.keys():
+            ftype = fields[i]
+            if counts[i] > 1:
+                self.fields[i] = "Array<{}>".format(ftype)
+            else:
+                self.fields[i] = ftype
 
-
-#
-# read xml, extract classes
-#
-classes = {}
-fields = {}
+    def __repr__(self):
+        return """
+-------------
+Class: {}
+Fields: {}
+-------------
+""".format(self.name, self.fields)
 
 
 pinteger = re.compile('^[0-9]+$')
@@ -56,15 +76,13 @@ pfloat = re.compile('^[0-9]+\.[0-9]*$')
 
 
 def do_branch(context, element):
-    obj = {}
-    children = set(element)
-    for k in children:
-        if k in fields:
-            obj[k] = fields[k]
-        else:
-            obj[k] = 'Unknown'
-    classes[element.tag] = obj
     fields[element.tag] = element.tag.capitalize()
+    klass = Klass()
+    if element.tag in klasses:
+        klass = klasses[element.tag]
+    else:
+        klasses[element.tag] = klass
+    klass.add(context, element)
 
 
 def do_leaf(context, element):
@@ -95,8 +113,8 @@ def analyze(input):
             else:
                 do_leaf(".".join(stack), element)
 
-    print(fields)
-    print(classes)
+    json.dumps(fields, sort_keys=True, indent=4)
+    json.dumps(klasses, sort_keys=True, indent=4)
 
 
 if __name__ == "__main__":
